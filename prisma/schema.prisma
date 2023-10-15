@@ -20,6 +20,7 @@ model User {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   bookings   Booking[]
+  reviews    Review[]
 
   @@map("users")
 }
@@ -40,6 +41,7 @@ model Service {
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
   bookings     Booking[]
+  reviews      Review[]
 
   @@map("services")
 }
@@ -94,4 +96,16 @@ model Day {
 model CloseDay {
   id   String   @id @default(uuid())
   date DateTime @unique
+}
+
+model Review {
+  id         String  @id @default(uuid())
+  service    Service @relation(fields: [serviceId], references: [id])
+  serviceId  String
+  reviewBy   User    @relation(fields: [reviewById], references: [id])
+  reviewById String
+  reviewText String
+  rating     Float
+
+  @@map("reviews")
 }

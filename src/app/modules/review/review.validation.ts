@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const createReviewZodSchema = z.object({
   body: z.object({
-    service: z.string(),
+    serviceId: z.string(),
     reviewText: z.string(),
     rating: z.number(),
   }),

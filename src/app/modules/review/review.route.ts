@@ -13,6 +13,7 @@ router.post(
   ReviewController.createReview
 );
 
+router.get('/:id', ReviewController.getSingleReview);
 router.get('/:id', ReviewController.getAllReviews);
 
 export const ReviewRoutes = router;

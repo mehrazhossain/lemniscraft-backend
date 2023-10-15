@@ -4,16 +4,18 @@ import { paginationFields } from '../../../constants/pagination';
 import catchAsync from '../../../shared/catchAsync';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
-import { IReview } from './review.interface';
 import { ReviewService } from './review.service';
 import { RequestHandler } from 'express-serve-static-core';
+import { Review } from '@prisma/client';
 
 const createReview: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const { ...reviewData } = req.body;
-    const result = await ReviewService.createReview(reviewData, req?.user?._id);
+    console.log(req.body);
 
-    sendResponse<IReview>(res, {
+    const result = await ReviewService.createReview(reviewData);
+
+    sendResponse<Review>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Review added successfully!',
@@ -30,7 +32,7 @@ const getAllReviews = catchAsync(async (req: Request, res: Response) => {
     req.params.id
   );
 
-  sendResponse<IReview[]>(res, {
+  sendResponse<Review[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Review retrieved successfully !',
@@ -40,15 +42,19 @@ const getAllReviews = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleReview = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id;
+  const reviewId = req.params.id;
 
-  const result = await ReviewService.getSingleReview(id);
+  const review = await ReviewService.getSingleReview(reviewId);
 
-  sendResponse<IReview>(res, {
+  if (!review) {
+    res.status(404).json({ message: 'Review not found' });
+  }
+
+  sendResponse<Review>(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Review retrieved successfully !',
-    data: result,
+    data: review,
   });
 });
 

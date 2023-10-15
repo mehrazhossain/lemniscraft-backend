@@ -2,24 +2,26 @@
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
-import { IReview } from './review.interface';
-import { Review } from './review.model';
-import { IUser } from '../user/user.interface';
-import { Types } from 'mongoose';
+import prisma from '../../../shared/prisma';
+import { Review } from '@prisma/client';
 
-const createReview = async (
-  review: IReview,
-  reviewBy: IUser | Types.ObjectId
-): Promise<IReview | null> => {
-  review.reviewBy = reviewBy;
-  const newReview = await Review.create(review);
-  return newReview;
+// const createReview = async (review: Review): Promise<Review | null> => {
+//   const newReview = ReviewController.createReview(review);
+
+//   return newReview;
+// };
+
+const createReview = async (review: Review): Promise<Review | null> => {
+  const result = await prisma.review.create({
+    data: review,
+  });
+  return result;
 };
 
 const getAllReviews = async (
   paginationOptions: IPaginationOptions,
-  bookId: string
-): Promise<IGenericResponse<IReview[]>> => {
+  serviceId: string
+): Promise<IGenericResponse<Review[]>> => {
   const { page, limit } =
     paginationHelpers.calculatePagination(paginationOptions);
 
@@ -28,11 +30,16 @@ const getAllReviews = async (
 
   let reviews: any = [];
 
-  // Fetch reviews for each service
-  const serviceReviews = await Review.find({ service: bookId }).populate(
-    'reviewBy'
-  );
-  reviews = reviews.concat(bookId);
+  const serviceReviews = await prisma.review.findMany({
+    where: {
+      serviceId: serviceId,
+    },
+    include: {
+      reviewBy: true,
+    },
+  });
+
+  reviews = reviews.concat(serviceReviews);
 
   result = reviews;
   total = reviews.length;
@@ -47,17 +54,15 @@ const getAllReviews = async (
   };
 };
 
-const getSingleReview = async (id: string): Promise<IReview | null> => {
-  const result = await Review.findById(id)
-    .populate('Service')
-    .populate('reviewBy')
-    .populate({
-      path: 'Service',
-      populate: {
-        path: 'seller',
-      },
-    });
-  return result;
+const getSingleReview = async (id: string): Promise<Review | null> => {
+  const review = await prisma.review.findUnique({
+    where: { id: id },
+    include: {
+      reviewBy: true,
+    },
+  });
+
+  return review;
 };
 
 export const ReviewService = {
