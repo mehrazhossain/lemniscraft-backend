@@ -1,27 +1,33 @@
 import express from 'express';
-import { UserRoutes } from '../modules/user/user.route';
-import { AuthRoutes } from '../modules/auth/auth.route';
-import { ReviewRoutes } from '../modules/review/review.route';
-import { ServiceRoutes } from '../modules/service/service.route';
+import { BookingRoutes } from '../modules/booking/booking.routes';
+import { timeSlotsRoutes } from '../modules/TimeSlot/timeSlots.routes';
+import { AuthRouter } from '../modules/auth/auth.routes';
+import { ServiceRouter } from '../modules/service/service.routes';
+import { UserRoutes } from '../modules/user/user.routes';
 
 const router = express.Router();
 
 const moduleRoutes = [
+  // ... routes
   {
     path: '/auth',
-    route: AuthRoutes,
+    route: AuthRouter,
   },
   {
-    path: '/users',
+    path: '/user',
     route: UserRoutes,
   },
   {
-    path: '/services',
-    route: ServiceRoutes,
+    path: '/service',
+    route: ServiceRouter,
   },
   {
-    path: '/reviews',
-    route: ReviewRoutes,
+    path: '/time-slots',
+    route: timeSlotsRoutes,
+  },
+  {
+    path: '/booking',
+    route: BookingRoutes,
   },
 ];
 

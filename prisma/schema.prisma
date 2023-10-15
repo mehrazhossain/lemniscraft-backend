@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String    @id @default(uuid())
+  firstName  String
+  lastName   String
+  email      String    @unique
+  password   String
+  role       UserRole  @default(user)
+  contactNo  String    @unique
+  address    String
+  profileImg String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  bookings   Booking[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  admin
+  superAdmin
+  user
+}
+
+model Service {
+  id           String              @id @default(uuid())
+  title        String
+  description  String
+  image        String
+  price        Int
+  availability ServiceAvailabality @default(available)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  bookings     Booking[]
+
+  @@map("services")
+}
+
+enum ServiceAvailabality {
+  upcomming
+  available
+}
+
+model Booking {
+  id            String        @id @default(uuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  serviceId     String
+  service       Service       @relation(fields: [serviceId], references: [id])
+  bookingStatus BookingStatus @default(pending)
+  bookingDate   DateTime
+  slotId        String
+  slot          TimeSlots     @relation(fields: [slotId], references: [id])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  pending
+  approved
+  canceled
+}
+
+model TimeSlots {
+  id        String @id @default(uuid())
+  startTime String @map("start_time")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  bookings  Booking[]
+
+  @@map("time_slots")
+}
+
+//// 
+model Day {
+  id        String @id @default(uuid())
+  name      String // monday, tuesday
+  dayOfWeek Int
+  openTime  String
+  closeTime String
+}
+
+model CloseDay {
+  id   String   @id @default(uuid())
+  date DateTime @unique
+}

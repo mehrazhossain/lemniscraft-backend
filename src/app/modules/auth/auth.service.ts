@@ -1,77 +1,56 @@
+import { User } from '@prisma/client';
+import bcrypt from 'bcrypt';
 import httpStatus from 'http-status';
+import { Secret } from 'jsonwebtoken';
 import config from '../../../config';
 import ApiError from '../../../errors/ApiError';
-import { User } from '../user/user.model';
-import {
-  ILoginUser,
-  ILoginUserResponse,
-  ITokenResponse,
-} from './auth.interface';
 import { jwtHelpers } from '../../../helpers/jwtHelpers';
-import { Secret } from 'jsonwebtoken';
+import prisma from '../../../shared/prisma';
+import { ILoginUser } from './auth.interface';
 
-const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
-  const { email, password } = payload;
-
-  // Check user is exist
-  const isUserExist = await User.isUserExist(email);
-
-  if (!isUserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
-  }
-
-  if (
-    isUserExist.password &&
-    !(await User.isPasswordMatched(password, isUserExist.password))
-  ) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password is incorrect');
-  }
-
-  //create access token & refresh token
-  const { _id, email: userEmail, role } = isUserExist;
-  const accessToken = jwtHelpers.createToken(
-    { _id, userEmail, role },
-    config.jwt.secret as Secret,
-    config.jwt.expires_in as string
+const SignUP = async (data: User) => {
+  const { password } = data;
+  const bcryptPassword = await bcrypt.hash(
+    password,
+    Number(config.bycrypt_salt_rounds)
   );
-
-  const refreshToken = jwtHelpers.createToken(
-    { _id, userEmail, role },
-    config.jwt.refresh_secret as Secret,
-    config.jwt.refresh_expires_in as string
-  );
-
-  return {
-    accessToken,
-    refreshToken,
-  };
+  data.password = bcryptPassword;
+  const result = await prisma.user.create({
+    data,
+  });
+  return result;
 };
 
-const refreshAccessToken = async (
-  refreshToken: string
-): Promise<ITokenResponse> => {
-  // Verify the refresh token
-  const decodedToken = jwtHelpers.verifyToken(
-    refreshToken,
-    config.jwt.refresh_secret as Secret
-  );
+const loginUser = async (payload: ILoginUser): Promise<string> => {
+  const { email, password } = payload;
+  const isUserExist = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+  });
 
-  // Retrieve the user information from the refresh token
-  const { _id, userEmail, role } = decodedToken;
-
-  // Generate a new access token
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User Not Found');
+  }
+  const checkPassword = await bcrypt.compare(password, isUserExist.password);
+  if (!checkPassword) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'Email address or password not valid'
+    );
+  }
+  // create assess token
+  const { id: userId, role } = isUserExist;
   const accessToken = jwtHelpers.createToken(
-    { _id, userEmail, role },
+    { userId, role },
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
   );
 
-  return {
-    accessToken,
-  };
+  return accessToken;
 };
 
 export const AuthService = {
+  SignUP,
   loginUser,
-  refreshAccessToken,
 };

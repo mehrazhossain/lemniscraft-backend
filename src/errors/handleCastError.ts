@@ -1,21 +1,34 @@
-import mongoose from 'mongoose';
+import { Prisma } from '@prisma/client';
 import { IGenericErrorMessage } from '../interfaces/error';
 
-const handleCastError = (error: mongoose.Error.CastError) => {
-  const errors: IGenericErrorMessage[] = [
-    {
-      path: error.path,
-      message: 'Invalid Id',
-    },
-  ];
-
+const handleCastError = (error: Prisma.PrismaClientKnownRequestError) => {
+  let errors: IGenericErrorMessage[] = [];
+  let message = '';
   const statusCode = 400;
-  const stack = error.stack;
+
+  if (error.code === 'P2025') {
+    message = (error.meta?.cause as string) || 'Record Not Found';
+    errors = [
+      {
+        path: '',
+        message,
+      },
+    ];
+  } else if (error.code === 'P2003') {
+    if (error.message.includes('delete()` invocation:')) {
+      message = 'Delete Failed';
+      errors = [
+        {
+          path: '',
+          message,
+        },
+      ];
+    }
+  }
   return {
     statusCode,
-    message: 'Cast Error',
+    message,
     errorMessages: errors,
-    stack,
   };
 };
 

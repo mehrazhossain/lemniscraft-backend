@@ -1,24 +1,36 @@
 import { z } from 'zod';
-
-const createServiceZodSchema = z.object({
+const create = z.object({
   body: z.object({
-    title: z.string(),
-    price: z.number(),
-    category: z.string(),
-    location: z.string(),
+    title: z.string({
+      required_error: 'Title is Required',
+    }),
+    image: z.string({
+      required_error: 'Image is Required',
+    }),
+    description: z.string({
+      required_error: 'Description is Required',
+    }),
+    price: z.number({
+      required_error: 'Price is Required',
+    }),
+    availability: z
+      .enum(['upcoming', 'available'], {
+        required_error: 'Availability is required',
+      })
+      .optional(),
   }),
 });
-
-const updateServiceZodSchema = z.object({
+const update = z.object({
   body: z.object({
     title: z.string().optional(),
+    image: z.string().optional(),
+    description: z.string().optional(),
     price: z.number().optional(),
-    category: z.string().optional(),
-    location: z.string().optional(),
+    availability: z.enum(['upcoming', 'available']).optional(),
   }),
 });
 
-export const ServiceValidaion = {
-  createServiceZodSchema,
-  updateServiceZodSchema,
+export const serviceValidation = {
+  create,
+  update,
 };
