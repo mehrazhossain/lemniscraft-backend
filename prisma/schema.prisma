@@ -8,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(uuid())
-  firstName  String
-  lastName   String
-  email      String    @unique
-  password   String
-  role       UserRole  @default(user)
-  contactNo  String    @unique
-  address    String
-  profileImg String
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  bookings   Booking[]
-  reviews    Review[]
+  id            String         @id @default(uuid())
+  firstName     String
+  lastName      String
+  email         String         @unique
+  password      String
+  role          UserRole       @default(user)
+  contactNo     String         @unique
+  address       String
+  profileImg    String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  bookings      Booking[]
+  reviews       Review[]
+  feedbackForms FeedbackForm[]
 
   @@map("users")
 }
@@ -91,11 +92,15 @@ model Day {
   dayOfWeek Int
   openTime  String
   closeTime String
+
+  @@map("days")
 }
 
 model CloseDay {
   id   String   @id @default(uuid())
   date DateTime @unique
+
+  @@map("closeDay")
 }
 
 model Review {
@@ -108,4 +113,13 @@ model Review {
   rating     Float
 
   @@map("reviews")
+}
+
+model FeedbackForm {
+  id       String @id @default(uuid())
+  feedback String
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+
+  @@map("feedback_form")
 }
