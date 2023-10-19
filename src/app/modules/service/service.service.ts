@@ -45,10 +45,6 @@ const getAllServiceFromDB = async (
     });
   }
 
-  /**
-   * const person = {name: "shawon"}
-   * name = person[name]
-   */
   const whereCondition: Prisma.ServiceWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
   const result = await prisma.service.findMany({

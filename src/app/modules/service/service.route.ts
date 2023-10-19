@@ -1,28 +1,17 @@
 import express from 'express';
-import validateRequest from '../../middlewares/validateRequest';
 import auth from '../../middlewares/auth';
-import { ENUM_USER_ROLE } from '../../../enmus/user';
-import { ServiceValidaion } from './service.validation';
 import { ServiceController } from './service.controller';
+import { ENUM_USER_ROLE } from '../../../enums/user';
 const router = express.Router();
 
 router.post(
   '/createService',
   auth(ENUM_USER_ROLE.SUPER_ADMIN),
-  validateRequest(ServiceValidaion.createServiceZodSchema),
-  ServiceController.createService
+  ServiceController.insertIntoDB
 );
 
-router.get(
-  '/:id',
-  // auth(ENUM_USER_ROLE.USER),
-  ServiceController.getSingleService
-);
-router.get(
-  '/',
-  // auth(ENUM_USER_ROLE.USER),
-  ServiceController.getAllServices
-);
+router.get('/:id', ServiceController.getSingleService);
+router.get('/', ServiceController.getSingleService);
 
 router.delete(
   '/:id',
@@ -33,7 +22,6 @@ router.delete(
 router.patch(
   '/:id',
   auth(ENUM_USER_ROLE.SUPER_ADMIN),
-  validateRequest(ServiceValidaion.updateServiceZodSchema),
   ServiceController.updateService
 );
 
