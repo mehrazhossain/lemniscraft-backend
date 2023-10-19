@@ -10,28 +10,22 @@ const getAllUserFromDB = async (
   filters: IUserFilters,
   options: IPaginationOptions
 ): Promise<IGenericResponse<User[] | null>> => {
-  const { page, limit, skip } = paginationHelpers.calculatePagination(options);
+  const { limit, page, skip } = paginationHelpers.calculatePagination(options);
   const { searchTerm } = filters;
 
-  const andConditons = [];
-
-  if (searchTerm) {
-    andConditons.push({
-      OR: userSearchableFields.map(field => ({
-        [field]: {
-          contains: searchTerm,
-          mode: 'insensitive',
-        },
-      })),
-    });
-  }
-  const whereConditons: Prisma.UserWhereInput =
-    andConditons.length > 0 ? { AND: andConditons } : {};
+  const whereConditions: Prisma.UserWhereInput = {
+    OR: userSearchableFields.map(field => ({
+      [field]: {
+        contains: searchTerm,
+        mode: 'insensitive',
+      },
+    })),
+  };
 
   const result = await prisma.user.findMany({
+    where: whereConditions,
     skip,
     take: limit,
-    where: whereConditons,
     orderBy:
       options.sortBy && options.sortOrder
         ? {
@@ -43,14 +37,14 @@ const getAllUserFromDB = async (
   });
 
   const total = await prisma.user.count({
-    where: whereConditons,
+    where: whereConditions,
   });
 
   return {
     meta: {
+      total,
       page,
       limit,
-      total,
     },
     data: result,
   };

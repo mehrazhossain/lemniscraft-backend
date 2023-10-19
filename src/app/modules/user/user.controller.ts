@@ -8,6 +8,7 @@ import { userFilterableFields } from './user.constant';
 
 const getAllUserFromDB = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, userFilterableFields);
+
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await UserService.getAllUserFromDB(filters, options);
 
