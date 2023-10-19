@@ -9,15 +9,16 @@ import sendResponse from '../../../shared/sendResponse';
 import { ProfileService } from './profile.service';
 
 const getUserProfile: RequestHandler = catchAsync(async (req, res) => {
-  const token = req.headers.authorization;
-  const verifiedUser = jwtHelpers.verifyToken(
-    token as string,
-    config.jwt.secret as Secret
-  );
+  // const token = req.headers.authorization;
+  // const verifiedUser = jwtHelpers.verifyToken(
+  //   token as string,
+  //   config.jwt.secret as Secret
+  // );
 
-  const { userId } = verifiedUser;
+  // const { userId } = verifiedUser;
+  const { id } = req.params;
 
-  const result = await ProfileService.getUserProfile(userId);
+  const result = await ProfileService.getUserProfile(id);
 
   sendResponse<User | null>(res, {
     statusCode: httpStatus.OK,
