@@ -45,6 +45,7 @@ const getSingleService = catchAsync(async (req: Request, res: Response) => {
 const updateService = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const data = req.body;
+  console.log(data);
   const result = await serviceService.updateService(id, data);
 
   sendResponse(res, {
