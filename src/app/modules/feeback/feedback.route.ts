@@ -1,9 +1,9 @@
 import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
 import auth from '../../middlewares/auth';
-import { ENUM_USER_ROLE } from '../../../enmus/user';
 import { FeedbackValidaion } from './feedback.validation';
 import { FeedbackController } from './feedback.controller';
+import { ENUM_USER_ROLE } from '../../../enums/user';
 const router = express.Router();
 
 router.post(

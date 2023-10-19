@@ -3,7 +3,8 @@ import validateRequest from '../../middlewares/validateRequest';
 import { UserController } from './user.controller';
 import { UserValidation } from './user.validation';
 import auth from '../../middlewares/auth';
-import { ENUM_USER_ROLE } from '../../../enmus/user';
+import { ENUM_USER_ROLE } from '../../../enums/user';
+
 const router = express.Router();
 
 router.get(
@@ -11,11 +12,13 @@ router.get(
   auth(ENUM_USER_ROLE.ADMIN),
   UserController.getSingleUserFromDB
 );
+
 router.get(
   '/',
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
   UserController.getAllUserFromDB
 );
+
 router.delete(
   '/:id',
   auth(ENUM_USER_ROLE.ADMIN),

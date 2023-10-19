@@ -3,7 +3,7 @@ import validateRequest from '../../middlewares/validateRequest';
 import { ReviewController } from './review.controller';
 import { ReviewValidaion } from './review.validation';
 import auth from '../../middlewares/auth';
-import { ENUM_USER_ROLE } from '../../../enmus/user';
+import { ENUM_USER_ROLE } from '../../../enums/user';
 const router = express.Router();
 
 router.post(

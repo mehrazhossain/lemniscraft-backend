@@ -3,9 +3,13 @@ import httpStatus from 'http-status';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { UserService } from './user.service';
+import pick from '../../../shared/pick';
+import { userFilterableFields } from './user.constant';
 
 const getAllUserFromDB = catchAsync(async (req: Request, res: Response) => {
-  const result = await UserService.getAllUserFromDB();
+  const filters = pick(req.query, userFilterableFields);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await UserService.getAllUserFromDB(filters, options);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

@@ -1,5 +1,6 @@
 import { UserRole } from '@prisma/client';
 import { z } from 'zod';
+
 const create = z.object({
   body: z.object({
     firstName: z.string({
