@@ -16,7 +16,7 @@ model User {
   role          UserRole       @default(user)
   contactNo     String         @unique
   address       String
-  profileImg    String
+  profileImg    String?        @default("")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   bookings      Booking[]
@@ -36,7 +36,7 @@ model Service {
   id           String              @id @default(uuid())
   title        String
   description  String
-  image        String
+  image        String?             @default("")
   price        Int
   availability ServiceAvailabality @default(available)
   createdAt    DateTime            @default(now())
@@ -85,7 +85,6 @@ model TimeSlots {
   @@map("time_slots")
 }
 
-//// 
 model Day {
   id        String @id @default(uuid())
   name      String // monday, tuesday

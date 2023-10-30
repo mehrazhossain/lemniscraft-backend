@@ -18,4 +18,9 @@ export default {
     expires_in: process.env.JWT_EXPIRES_IN,
     refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
   },
+  cloudinary: {
+    cloudName: process.env.CLOUD_NAME,
+    apiKey: process.env.API_KEY,
+    apiSecret: process.env.API_SECRET
+  }
 };
