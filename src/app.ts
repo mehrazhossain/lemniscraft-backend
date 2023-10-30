@@ -16,9 +16,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1', routes);
-// Testing
+
+// test
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World! Assignment-9');
+  res.send('Application running...');
 });
 
 //global error handler
